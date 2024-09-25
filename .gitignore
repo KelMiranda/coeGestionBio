@@ -1,0 +1,11 @@
+# Ignorar el archivo .env
+.env
+
+# Ignorar la carpeta node_modules
+node_modules/
+
+# ignorar .venv
+.venv
+
+#Ignorar el id
+.idea

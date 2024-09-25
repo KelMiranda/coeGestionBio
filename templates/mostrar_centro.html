@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información del Centro Educativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto mt-10">
+        <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+            <h1 class="text-3xl font-bold text-center mb-6">Información del Centro Educativo</h1>
+
+            <!-- Mostrar información del centro -->
+            <div class="space-y-4">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-700">Nombre del Centro:</h2>
+                    <p class="text-gray-600">{{ centro.nombre_centro }}</p>
+                </div>
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-700">Municipio del Centro: </h2>
+                    <p class="text-gray-600">{{ centro.municipio_centro }}</p>
+                </div>
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-700">Departamento del Centro: </h2>
+                    <p class="text-gray-600">{{ centro.departamento_centro }}</p>
+                </div>
+            </div> <!-- Aquí faltaba cerrar este "div" -->
+
+            <!-- Botón para regresar a la búsqueda y abrir modal -->
+            <div class="text-center mt-6">
+                <a href="/buscar_centro"
+                   class="inline-block px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-75">
+                    Regresar a la búsqueda
+                </a>
+                <button id="openModal" class="px-6 py-2 bg-blue-950 text-white font-semibold rounded-lg hover:bg-blue-500">
+                    Agregar Contacto
+                </button>
+            </div>
+
+            <!-- Modal para agregar un nuevo contacto con múltiples teléfonos y tipo -->
+            <div id="contactModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+                <div class="flex items-center justify-center min-h-screen">
+                    <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+                        <h2 class="text-xl font-semibold mb-4">Agregar un nuevo contacto</h2>
+                        <form action="/agregar_contacto/{{ centro.id }}" method="POST" class="space-y-4">
+                            <!-- Campo para nombre del contacto -->
+                            <div>
+                                <label for="nombre_contacto" class="block text-sm font-medium text-gray-700">Nombre del Contacto</label>
+                                <input type="text" id="nombre_contacto" name="nombre_contacto" placeholder="Escribe el nombre" required
+                                       class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+
+                            <!-- Campo(s) para teléfono(s) con tipo de teléfono -->
+                            <div id="telefonos-container">
+                                <div class="telefono-entry">
+                                    <label for="telefono_contacto_1" class="block text-sm font-medium text-gray-700">Teléfono</label>
+                                    <div class="flex space-x-2 mt-1">
+                                        <input type="text" id="telefono_contacto_1" name="telefonos[]" placeholder="Escribe el teléfono" required
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+
+                                        <select name="tipo_telefono[]" class="px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                            <option value="celular">Celular</option>
+                                            <option value="domicilio">Domicilio</option>
+                                            <option value="trabajo">Trabajo</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botón para agregar más teléfonos -->
+                            <div class="text-center">
+                                <button type="button" id="addPhoneBtn"
+                                        class="w-full px-4 py-2 mt-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600">
+                                    Agregar otro teléfono
+                                </button>
+                            </div>
+
+                            <!-- Botón para enviar el formulario -->
+                            <div class="text-center">
+                                <button type="submit" class="w-full px-4 py-2 mt-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700">
+                                    Agregar Contacto
+                                </button>
+                                <!-- Botón para cerrar el modal -->
+                                <button type="button" id="closeModalBtn"
+                                    class="w-full px-4 py-2 mt-4 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700">
+                                Cerrar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+<script>
+    let phoneCounter = 1;
+
+    // JavaScript para abrir y cerrar el modal
+    document.getElementById('openModal').onclick = function() {
+    document.getElementById('contactModal').classList.remove('hidden');
+    }
+    // JavaScript para cerrar el modal con el nuevo botón
+    document.getElementById('closeModalBtn').onclick = function() {
+    document.getElementById('contactModal').classList.add('hidden');
+
+}
+
+    // JavaScript para agregar más campos de teléfono con selección de tipo
+    document.getElementById('addPhoneBtn').onclick = function() {
+        phoneCounter++;
+        const phoneContainer = document.getElementById('telefonos-container');
+        const newPhoneEntry = document.createElement('div');
+        newPhoneEntry.classList.add('telefono-entry', 'mt-4');
+
+        newPhoneEntry.innerHTML = `
+            <label for="telefono_contacto_${phoneCounter}" class="block text-sm font-medium text-gray-700">Teléfono ${phoneCounter}</label>
+            <div class="flex space-x-2 mt-1">
+                <input type="text" id="telefono_contacto_${phoneCounter}" name="telefonos[]" placeholder="Escribe el teléfono" required
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+
+                <select name="tipo_telefono[]" class="px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="celular">Celular</option>
+                    <option value="domicilio">Domicilio</option>
+                    <option value="trabajo">Trabajo</option>
+                </select>
+            </div>
+        `;
+
+        phoneContainer.appendChild(newPhoneEntry);
+    }
+</script>
+        </div>
+    </div>
+</body>
+</html>
+
