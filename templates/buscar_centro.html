@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Centro Educativo</title>
+    <!-- Enlazar el archivo CSS de Tailwind -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto mt-10">
+        <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
+            <h1 class="text-2xl font-bold text-center mb-6">Buscar Centro Educativo</h1>
+
+            <!-- Formulario de búsqueda -->
+            <form action="/buscar_centro" method="POST" class="space-y-4">
+                <div>
+                    <label for="codigo_institucion" class="block text-sm font-medium text-gray-700">Ingrese el Codigo de la Institucion</label>
+                    <input type="text" id="codigo_institucional" name="codigo_institucional" placeholder="Escribe el Codigo Institucional" required
+                           class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+
+                <!-- Botón de búsqueda -->
+                <div class="text-center">
+                    <button type="submit"
+                            class="w-full px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-75">
+                        Buscar
+                    </button>
+                </div>
+            </form>
+
+            <!-- Mensaje de resultado o error -->
+            {% if mensaje %}
+            <div class="mt-4 text-red-600 text-center">
+                {{ mensaje }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
