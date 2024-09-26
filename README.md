@@ -18,8 +18,3 @@ Este proyecto es una aplicación web desarrollada con Flask para llevar el contr
 - **JavaScript**: Interactividad en la interfaz de usuario (gestión de modales y formularios dinámicos).
 - **Flask-Login**: Autenticación de usuarios.
 
-## Instrucciones de instalación
-
-1. Clonar el repositorio:
-   ```bash
-   git clone https://github.com/usuario/control-biodigestores.git

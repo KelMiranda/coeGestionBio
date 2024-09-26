@@ -1,5 +1,5 @@
-import pyodbc
 import os
+import pyodbc
 import logging
 from dotenv import load_dotenv
 
@@ -8,6 +8,7 @@ class SQLServerDatabase:
         # Cargar las variables de entorno desde el archivo .env
         load_dotenv()
 
+        # Obtener las variables de entorno directamente desde el archivo .env
         self.server = os.getenv(server)  # Obtiene la variable desde el .env
         self.database = os.getenv(database)
         self.username = os.getenv(username)
@@ -17,21 +18,27 @@ class SQLServerDatabase:
     def connect(self):
         try:
             if self.connection is None:
-                connection_string = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={self.server};DATABASE={self.database};UID={self.username};PWD={self.password}"
+                connection_string = (
+                    f"DRIVER={{ODBC Driver 17 for SQL Server}};"
+                    f"SERVER={self.server};"
+                    f"DATABASE={self.database};"
+                    f"UID={self.username};"
+                    f"PWD={self.password}"
+                )
                 self.connection = pyodbc.connect(connection_string)
-                print("Connected to SQL Server.")
+                logging.info("Connected to SQL Server.")
             else:
-                print("Already connected to SQL Server.")
+                logging.info("Already connected to SQL Server.")
         except pyodbc.Error as e:
-            print(f"Error connecting to SQL Server: {e}")
+            logging.error(f"Error connecting to SQL Server: {e}")
 
     def disconnect(self):
         if self.connection:
             self.connection.close()
-            print("Disconnected from SQL Server.")
+            logging.info("Disconnected from SQL Server.")
             self.connection = None
         else:
-            print("No active connection to disconnect from.")
+            logging.warning("No active connection to disconnect from.")
 
     def is_connected(self):
         return self.connection is not None
@@ -39,7 +46,7 @@ class SQLServerDatabase:
     def execute_query(self, query, return_results=True):
         try:
             if not self.is_connected():
-                print("No active connection to execute the query.")
+                logging.error("No active connection to execute the query.")
                 return None
 
             with self.connection.cursor() as cursor:
@@ -49,11 +56,11 @@ class SQLServerDatabase:
                     results = cursor.fetchall()
                     return results
                 else:
-                    print(f"Número de filas afectadas: {cursor.rowcount}")
+                    logging.info(f"Número de filas afectadas: {cursor.rowcount}")
                     return None
 
         except pyodbc.Error as ex:
-            print('Error executing query:', ex)
+            logging.error(f"Error executing query: {ex}")
             return None
 
     def execute_query_with_params(self, query, params=None, return_results=True):
@@ -80,7 +87,7 @@ class SQLServerDatabase:
     def log_error(self, process_name, error_message, additional_info=None, path=None):
         try:
             if not self.is_connected():
-                print("No active connection to log the error.")
+                logging.error("No active connection to log the error.")
                 return
 
             query = "{CALL InsertErrorLog (?, ?, ?, ?)}"
@@ -89,7 +96,8 @@ class SQLServerDatabase:
             with self.connection.cursor() as cursor:
                 cursor.execute(query, params)
                 self.connection.commit()
-                print("Error logged successfully.")
+                logging.info("Error logged successfully.")
 
         except pyodbc.Error as ex:
-            print(f"Error logging the error: {ex}")
+            logging.error(f"Error logging the error: {ex}")
+
